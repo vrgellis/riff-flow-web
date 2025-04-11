@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import PromptInput from '../components/PromptInput';
 import Spectrogram from '../components/Spectrogram';
@@ -8,6 +8,7 @@ import GenerationControls from '../components/GenerationControls';
 import HistoryItem from '../components/HistoryItem';
 import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
+import { API_CONFIG } from '../config/api';
 
 interface Generation {
   id: string;
@@ -22,23 +23,51 @@ const Index = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentGeneration, setCurrentGeneration] = useState<Generation | null>(null);
   const [history, setHistory] = useState<Generation[]>([]);
+  const [apiStatus, setApiStatus] = useState<'online' | 'offline' | 'checking'>('checking');
   
   // Generation parameters
   const [denoising, setDenoising] = useState(0.75);
   const [seedValue, setSeedValue] = useState('');
   const [model, setModel] = useState('v1');
 
-  // Riffusion API URL - adjust this to your local setup
-  const RIFFUSION_API_URL = 'http://localhost:8000/api';
+  // Check API status on component mount and periodically
+  useEffect(() => {
+    checkApiStatus();
+    
+    // Check API status every 30 seconds
+    const interval = setInterval(checkApiStatus, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const checkApiStatus = async () => {
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.HEALTH}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      setApiStatus(response.ok ? 'online' : 'offline');
+    } catch (error) {
+      console.error('API health check failed:', error);
+      setApiStatus('offline');
+    }
+  };
 
   const generateMusic = async (prompt: string) => {
+    if (apiStatus === 'offline') {
+      toast.error('Riffusion API is offline. Please check your local server.');
+      return;
+    }
+    
     setIsGenerating(true);
     
     try {
       const seed = seedValue || Math.floor(Math.random() * 1000000).toString();
       
       // Call to Riffusion API
-      const response = await fetch(`${RIFFUSION_API_URL}/generate`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GENERATE}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,8 +89,8 @@ const Index = () => {
       const newGeneration: Generation = {
         id: `gen-${Date.now()}`,
         prompt,
-        imageUrl: data.image_url || `${RIFFUSION_API_URL}/spectrogram/${data.id}.png`,
-        audioUrl: data.audio_url || `${RIFFUSION_API_URL}/audio/${data.id}.wav`,
+        imageUrl: data.image_url || `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SPECTROGRAM}/${data.id}.png`,
+        audioUrl: data.audio_url || `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUDIO}/${data.id}.wav`,
         seed,
         timestamp: new Date()
       };
@@ -91,7 +120,7 @@ const Index = () => {
   return (
     <div className="min-h-screen app-gradient text-foreground">
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <Header />
+        <Header apiStatus={apiStatus} />
         
         <main className="mt-8">
           <div className="w-full glass-panel rounded-lg p-6 mb-8">
