@@ -18,14 +18,6 @@ interface Generation {
   timestamp: Date;
 }
 
-// Sample placeholder audio and images for demonstration
-const DEMO_AUDIO_URL = 'https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-0.mp3';
-const PLACEHOLDER_IMAGES = [
-  'https://miro.medium.com/v2/resize:fit:1400/1*yximehCnSiQJcN7LUIQtEw.png',
-  'https://miro.medium.com/v2/resize:fit:1400/1*TnleD2BzfkFMkfx0ZulAHQ.png',
-  'https://miro.medium.com/v2/resize:fit:1400/1*0wFVfdJoI-Z1nC7e3zvcPQ.png'
-];
-
 const Index = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentGeneration, setCurrentGeneration] = useState<Generation | null>(null);
@@ -36,22 +28,41 @@ const Index = () => {
   const [seedValue, setSeedValue] = useState('');
   const [model, setModel] = useState('v1');
 
+  // Riffusion API URL - adjust this to your local setup
+  const RIFFUSION_API_URL = 'http://localhost:8000/api';
+
   const generateMusic = async (prompt: string) => {
     setIsGenerating(true);
     
     try {
-      // In a real implementation, this would call an API to generate the audio
-      // For demo purposes, we'll simulate a network request with setTimeout
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      const seed = seedValue || Math.floor(Math.random() * 1000000).toString();
       
-      // Create a demo generation with a random image from our placeholders
-      const randomImage = PLACEHOLDER_IMAGES[Math.floor(Math.random() * PLACEHOLDER_IMAGES.length)];
+      // Call to Riffusion API
+      const response = await fetch(`${RIFFUSION_API_URL}/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt,
+          seed,
+          denoising_strength: denoising,
+          model_version: model,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
       const newGeneration: Generation = {
         id: `gen-${Date.now()}`,
         prompt,
-        imageUrl: randomImage,
-        audioUrl: DEMO_AUDIO_URL,
-        seed: seedValue || Math.floor(Math.random() * 1000000).toString(),
+        imageUrl: data.image_url || `${RIFFUSION_API_URL}/spectrogram/${data.id}.png`,
+        audioUrl: data.audio_url || `${RIFFUSION_API_URL}/audio/${data.id}.wav`,
+        seed,
         timestamp: new Date()
       };
       
@@ -60,7 +71,7 @@ const Index = () => {
       toast.success('Generation complete!');
     } catch (error) {
       console.error('Generation failed:', error);
-      toast.error('Failed to generate music. Please try again.');
+      toast.error('Failed to generate music. Please check if Riffusion API is running.');
     } finally {
       setIsGenerating(false);
     }

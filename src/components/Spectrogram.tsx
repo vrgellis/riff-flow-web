@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 
 interface SpectrogramProps {
   imageUrl?: string;
@@ -7,16 +7,24 @@ interface SpectrogramProps {
 }
 
 const Spectrogram: React.FC<SpectrogramProps> = ({ imageUrl, isGenerating }) => {
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageError = () => {
+    console.error("Failed to load spectrogram image");
+    setImageError(true);
+  };
+
   return (
     <div className="relative w-full aspect-square max-w-md mx-auto rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:shadow-xl">
       <div className={`absolute inset-0 spectrogram-gradient opacity-20 ${isGenerating ? 'animate-pulse-glow' : ''}`} />
       
-      {imageUrl ? (
+      {imageUrl && !imageError ? (
         <div className="relative w-full h-full overflow-hidden">
           <img 
             src={imageUrl} 
             alt="Audio spectrogram" 
             className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+            onError={handleImageError}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
         </div>
@@ -31,7 +39,7 @@ const Spectrogram: React.FC<SpectrogramProps> = ({ imageUrl, isGenerating }) => 
             <div className="text-center p-6 transform transition-transform duration-500 hover:scale-105">
               <p className="text-xl font-semibold text-primary">Audio Spectrogram</p>
               <p className="mt-2 text-sm text-muted-foreground">
-                Enter a prompt to generate audio and see its spectrogram visualization
+                {imageError ? "Failed to load spectrogram. Check API connection." : "Enter a prompt to generate audio and see its spectrogram visualization"}
               </p>
             </div>
           )}
