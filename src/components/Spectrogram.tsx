@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface SpectrogramProps {
   imageUrl?: string;
@@ -8,10 +8,23 @@ interface SpectrogramProps {
 
 const Spectrogram: React.FC<SpectrogramProps> = ({ imageUrl, isGenerating }) => {
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    // Reset image states when new image is being loaded
+    if (imageUrl) {
+      setImageError(false);
+      setImageLoaded(false);
+    }
+  }, [imageUrl]);
 
   const handleImageError = () => {
     console.error("Failed to load spectrogram image");
     setImageError(true);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
   };
 
   return (
@@ -23,8 +36,9 @@ const Spectrogram: React.FC<SpectrogramProps> = ({ imageUrl, isGenerating }) => 
           <img 
             src={imageUrl} 
             alt="Audio spectrogram" 
-            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+            className={`w-full h-full object-cover transition-all duration-700 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'} hover:scale-105`}
             onError={handleImageError}
+            onLoad={handleImageLoad}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
         </div>
