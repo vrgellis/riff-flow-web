@@ -31,5 +31,17 @@ export const API_CONFIG = {
       'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=640&auto=format&fit=crop&crop=entropy&cs=tinysrgb',
       'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=640&auto=format&fit=crop&crop=entropy&cs=tinysrgb'
     ]
+  },
+  
+  // Backend installation instructions
+  INSTALLATION_HELP: {
+    DEPENDENCY_FIXES: [
+      "pip install huggingface_hub==0.11.1",
+      "pip install diffusers==0.9.0",
+      "pip install accelerate==0.12.0",
+      "pip install transformers==4.23.1"
+    ],
+    START_SERVER: "python -m riffusion.server",
+    GITHUB_REPO: "https://github.com/riffusion/riffusion"
   }
 };
