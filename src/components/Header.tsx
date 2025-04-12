@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Music4, Waveform, RefreshCw } from 'lucide-react';
+import { Music4, Radio, RefreshCw } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
@@ -19,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({ apiStatus = 'checking' }) => {
       <div className="flex items-center space-x-2">
         <Music4 className="h-8 w-8 text-primary animate-float" />
         <h1 className="text-2xl font-bold tracking-tight">RiffFlow</h1>
-        <Waveform className="h-5 w-5 text-primary/80" />
+        <Radio className="h-5 w-5 text-primary/80" />
       </div>
       
       <div className="flex items-center space-x-3">
