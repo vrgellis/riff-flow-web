@@ -1,15 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import PromptInput from '../components/PromptInput';
 import Spectrogram from '../components/Spectrogram';
 import AudioPlayer from '../components/AudioPlayer';
 import GenerationControls from '../components/GenerationControls';
-import HistoryItem from '../components/HistoryItem';
-import { Separator } from '../components/ui/separator';
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
-import { Button } from "../components/ui/button";
-import { InfoIcon, HelpCircle, AlertTriangle } from "lucide-react";
+import DemoModeBanner from '../components/DemoModeBanner';
+import GenerationHistory from '../components/GenerationHistory';
 import { toast } from 'sonner';
 import { API_CONFIG } from '../config/api';
 
@@ -27,7 +23,6 @@ const Index = () => {
   const [currentGeneration, setCurrentGeneration] = useState<Generation | null>(null);
   const [history, setHistory] = useState<Generation[]>([]);
   const [apiStatus, setApiStatus] = useState<'online' | 'offline' | 'checking'>('checking');
-  const [showInstallHelp, setShowInstallHelp] = useState(false);
   
   // Generation parameters
   const [denoising, setDenoising] = useState(0.75);
@@ -168,58 +163,13 @@ const Index = () => {
     }
   };
 
-  const toggleInstallHelp = () => {
-    setShowInstallHelp(!showInstallHelp);
-  };
-
   return (
     <div className="min-h-screen app-gradient text-foreground">
       <div className="max-w-6xl mx-auto px-4 py-6">
         <Header apiStatus={apiStatus} />
         
         <main className="mt-8">
-          {API_CONFIG.DEMO_MODE && (
-            <div className="w-full glass-panel rounded-lg p-4 mb-6 bg-amber-500/20 border border-amber-500/30">
-              <div className="flex flex-col space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <AlertTriangle className="h-5 w-5 text-amber-600 mr-2" />
-                    <p className="font-medium text-amber-700">
-                      Demo Mode Active — Using pre-recorded sample audio
-                    </p>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={toggleInstallHelp}
-                    className="text-amber-700 border-amber-500/50 hover:bg-amber-500/10"
-                  >
-                    <HelpCircle className="h-4 w-4 mr-1" />
-                    {showInstallHelp ? "Hide Help" : "Setup Backend"}
-                  </Button>
-                </div>
-
-                {showInstallHelp && (
-                  <div className="mt-2 p-3 bg-background/80 rounded-md text-sm">
-                    <h4 className="font-semibold mb-2">Backend Installation Guide</h4>
-                    <p className="mb-2">To enable real music generation, install the Riffusion backend:</p>
-                    <ol className="list-decimal pl-5 space-y-1">
-                      <li>Clone the repo: <code className="bg-muted px-1 rounded">git clone {API_CONFIG.INSTALLATION_HELP.GITHUB_REPO}</code></li>
-                      <li>Install specific package versions:</li>
-                      <div className="bg-black/80 text-green-400 p-2 rounded font-mono text-xs mt-1 mb-2">
-                        {API_CONFIG.INSTALLATION_HELP.DEPENDENCY_FIXES.map((cmd, i) => (
-                          <div key={i}>{cmd}</div>
-                        ))}
-                      </div>
-                      <li>Start the server: <code className="bg-muted px-1 rounded">{API_CONFIG.INSTALLATION_HELP.START_SERVER}</code></li>
-                      <li>Set <code className="bg-muted px-1 rounded">DEMO_MODE: false</code> in <code className="bg-muted px-1 rounded">src/config/api.ts</code></li>
-                    </ol>
-                    <p className="mt-2 text-xs text-muted-foreground">More help: <a href={API_CONFIG.INSTALLATION_HELP.GITHUB_REPO} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Riffusion GitHub</a></p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          {API_CONFIG.DEMO_MODE && <DemoModeBanner />}
           
           <div className="w-full glass-panel rounded-lg p-6 mb-8">
             <PromptInput onGenerate={generateMusic} isGenerating={isGenerating} />
@@ -247,22 +197,11 @@ const Index = () => {
               />
               
               {history.length > 0 && (
-                <div className="glass-panel rounded-lg p-4">
-                  <h3 className="text-md font-semibold mb-4">Generation History</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-3">
-                    {history.map(item => (
-                      <HistoryItem
-                        key={item.id}
-                        id={item.id}
-                        prompt={item.prompt}
-                        imageUrl={item.imageUrl}
-                        audioUrl={item.audioUrl}
-                        onPlay={() => handlePlay(item)}
-                        onDelete={() => handleDelete(item.id)}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <GenerationHistory 
+                  history={history}
+                  onPlay={handlePlay}
+                  onDelete={handleDelete}
+                />
               )}
             </div>
           </div>
