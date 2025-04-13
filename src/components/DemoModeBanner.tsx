@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
-import { AlertTriangle, HelpCircle } from "lucide-react";
+import { AlertTriangle, HelpCircle, RefreshCw } from "lucide-react";
 import InstallationHelp from './InstallationHelp';
 import { API_CONFIG } from '../config/api';
 
@@ -11,6 +11,10 @@ const DemoModeBanner = () => {
 
   const toggleInstallHelp = () => {
     setShowInstallHelp(!showInstallHelp);
+  };
+
+  const handleRefresh = () => {
+    window.location.reload();
   };
 
   return (
@@ -23,15 +27,26 @@ const DemoModeBanner = () => {
               Demo Mode Active — Using pre-recorded sample audio
             </p>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={toggleInstallHelp}
-            className="text-amber-700 border-amber-500/50 hover:bg-amber-500/10"
-          >
-            <HelpCircle className="h-4 w-4 mr-1" />
-            {showInstallHelp ? "Hide Help" : "Setup Backend"}
-          </Button>
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleRefresh}
+              className="text-amber-700 border-amber-500/50 hover:bg-amber-500/10"
+            >
+              <RefreshCw className="h-4 w-4 mr-1" />
+              Reconnect
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={toggleInstallHelp}
+              className="text-amber-700 border-amber-500/50 hover:bg-amber-500/10"
+            >
+              <HelpCircle className="h-4 w-4 mr-1" />
+              {showInstallHelp ? "Hide Help" : "Setup Backend"}
+            </Button>
+          </div>
         </div>
 
         {showInstallHelp && <InstallationHelp />}

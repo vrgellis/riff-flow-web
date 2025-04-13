@@ -1,6 +1,7 @@
 
 import React from 'react';
 import HistoryItem from './HistoryItem';
+import { API_CONFIG } from '../config/api';
 
 interface Generation {
   id: string;
@@ -28,7 +29,7 @@ const GenerationHistory: React.FC<GenerationHistoryProps> = ({
 
   return (
     <div className="glass-panel rounded-lg p-4">
-      <h3 className="text-md font-semibold mb-4">Generation History</h3>
+      <h3 className="text-md font-semibold mb-3">Generation History</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-3">
         {history.map(item => (
           <HistoryItem
@@ -39,9 +40,15 @@ const GenerationHistory: React.FC<GenerationHistoryProps> = ({
             audioUrl={item.audioUrl}
             onPlay={() => onPlay(item)}
             onDelete={() => onDelete(item.id)}
+            isDemoMode={API_CONFIG.DEMO_MODE}
           />
         ))}
       </div>
+      {API_CONFIG.DEMO_MODE && (
+        <div className="mt-3 text-xs text-amber-600 italic">
+          <p>Note: History items are using sample audio in demo mode</p>
+        </div>
+      )}
     </div>
   );
 };

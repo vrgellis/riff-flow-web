@@ -2,7 +2,7 @@
 // API configuration for Riffusion
 export const API_CONFIG = {
   // Enable demo mode to use mock data instead of trying to connect to a local server
-  DEMO_MODE: true,
+  DEMO_MODE: false,
   
   // Base URL for the Riffusion API - change this if your API is running on a different host/port
   BASE_URL: 'http://localhost:8000',
