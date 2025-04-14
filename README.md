@@ -1,4 +1,3 @@
-
 # RiffFlow - AI Music Generation
 
 RiffFlow is a complete AI music generation application with both frontend and backend components.
@@ -57,7 +56,35 @@ npm run dev
 - Tailwind CSS
 - Riffusion (AI Music Generation)
 - Python
+
+## 🔍 Checking Dependencies
+
+Before installation, verify your system has the required dependencies:
+
+### Mac/Linux
+```bash
+chmod +x scripts/check-dependencies.sh
+./scripts/check-dependencies.sh
 ```
+
+### Windows
+```cmd
+scripts\check-dependencies.bat
+```
+
+### Required Versions
+- Python: 3.8+
+- pip: Latest
+- Git: Latest
+- Node.js: 16+ (LTS recommended)
+- npm: Latest
+
+### Troubleshooting
+If any dependencies are missing, install them using:
+- Python: https://www.python.org/downloads/
+- pip: Typically comes with Python
+- Git: https://git-scm.com/downloads
+- Node.js: https://nodejs.org/
 
 Next, I'll create setup scripts for automatic installation:
 
