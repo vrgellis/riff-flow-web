@@ -1,25 +1,94 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { API_CONFIG } from '../config/api';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Copy, Terminal } from 'lucide-react';
+import { Button } from './ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { toast } from 'sonner';
 
 const InstallationHelp = () => {
+  const [platform, setPlatform] = useState<'windows' | 'mac_linux'>('windows');
+
+  const copyToClipboard = (commands: string[]) => {
+    const text = commands.join('\n');
+    navigator.clipboard.writeText(text);
+    toast.success('Commands copied to clipboard!');
+  };
+
+  const platformCommands = platform === 'windows' 
+    ? API_CONFIG.INSTALLATION_HELP.ONE_CLICK_SETUP.WINDOWS
+    : API_CONFIG.INSTALLATION_HELP.ONE_CLICK_SETUP.MAC_LINUX;
+
   return (
     <div className="mt-2 p-3 bg-background/80 rounded-md text-sm">
       <h4 className="font-semibold mb-2">Backend Installation Guide</h4>
-      <p className="mb-2">Follow these steps to set up the Riffusion backend:</p>
-      <ol className="list-decimal pl-5 space-y-1">
-        <li>Clone the repo: <code className="bg-muted px-1 rounded">git clone {API_CONFIG.INSTALLATION_HELP.GITHUB_REPO}</code></li>
-        <li>Install specific package versions:</li>
-        <div className="bg-black/80 text-green-400 p-2 rounded font-mono text-xs mt-1 mb-2">
-          {API_CONFIG.INSTALLATION_HELP.DEPENDENCY_FIXES.map((cmd, i) => (
-            <div key={i}>{cmd}</div>
-          ))}
-        </div>
-        <li>Start the server: <code className="bg-muted px-1 rounded">{API_CONFIG.INSTALLATION_HELP.START_SERVER}</code></li>
-        <li>Ensure the server runs on port 8000 (default)</li>
-        <li>Verify the API is running by checking <code className="bg-muted px-1 rounded">http://localhost:8000/api/health</code></li>
-      </ol>
+      
+      <Tabs defaultValue="quick" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-2">
+          <TabsTrigger value="quick">Quick Setup</TabsTrigger>
+          <TabsTrigger value="manual">Manual Setup</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="quick">
+          <div className="mb-3">
+            <p className="mb-2">Select your platform and run these commands to set up the Riffusion backend:</p>
+            
+            <div className="flex gap-2 mb-3">
+              <Button 
+                variant={platform === 'windows' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setPlatform('windows')}
+              >
+                Windows
+              </Button>
+              <Button 
+                variant={platform === 'mac_linux' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setPlatform('mac_linux')}
+              >
+                Mac/Linux
+              </Button>
+            </div>
+            
+            <div className="relative">
+              <div className="bg-black/80 text-green-400 p-2 rounded font-mono text-xs mt-1 mb-2">
+                {platformCommands.map((cmd, i) => (
+                  <div key={i}>{cmd}</div>
+                ))}
+              </div>
+              
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="absolute top-2 right-2 h-6 w-6 p-0"
+                onClick={() => copyToClipboard(platformCommands)}
+              >
+                <Copy className="h-3 w-3" />
+              </Button>
+            </div>
+            
+            <div className="flex items-start mt-3 text-xs">
+              <Terminal className="h-4 w-4 text-primary mt-0.5 mr-1.5 flex-shrink-0" />
+              <span>Run these commands in your terminal to clone, set up, and start the Riffusion server automatically.</span>
+            </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="manual">
+          <ol className="list-decimal pl-5 space-y-1">
+            <li>Clone the repo: <code className="bg-muted px-1 rounded">git clone {API_CONFIG.INSTALLATION_HELP.GITHUB_REPO}</code></li>
+            <li>Install specific package versions:</li>
+            <div className="bg-black/80 text-green-400 p-2 rounded font-mono text-xs mt-1 mb-2">
+              {API_CONFIG.INSTALLATION_HELP.DEPENDENCY_FIXES.map((cmd, i) => (
+                <div key={i}>{cmd}</div>
+              ))}
+            </div>
+            <li>Start the server: <code className="bg-muted px-1 rounded">{API_CONFIG.INSTALLATION_HELP.START_SERVER}</code></li>
+            <li>Ensure the server runs on port 8000 (default)</li>
+            <li>Verify the API is running by checking <code className="bg-muted px-1 rounded">http://localhost:8000/api/health</code></li>
+          </ol>
+        </TabsContent>
+      </Tabs>
       
       <div className="mt-4 border-t pt-3 border-border/40">
         <h5 className="font-medium mb-2">Troubleshooting Tips</h5>

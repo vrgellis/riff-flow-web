@@ -1,73 +1,78 @@
-# Welcome to your Lovable project
 
-## Project info
+# RiffFlow - AI Music Generation
 
-**URL**: https://lovable.dev/projects/a98f5a9c-96d0-4630-bb13-370dc0277b80
+RiffFlow is a React-based web application that leverages Riffusion's AI model to generate music from text prompts. This project includes both the frontend (this repository) and instructions for setting up the backend.
 
-## How can I edit this code?
+## Overview
 
-There are several ways of editing your application.
+RiffFlow allows you to:
+- Generate music from text descriptions
+- Visualize the generated audio as spectrograms
+- Adjust generation parameters like denoising strength and seed values
+- View and replay your generation history
 
-**Use Lovable**
+## Quick Setup
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a98f5a9c-96d0-4630-bb13-370dc0277b80) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### Frontend (This Repository)
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Step 1: Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Step 2: Navigate to the project directory
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
+# Step 3: Install the dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Backend (Riffusion)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+The application requires the Riffusion backend to generate audio. You can either:
 
-**Use GitHub Codespaces**
+1. **Run in Demo Mode:** The app will automatically use sample audio files if the backend is not detected.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+2. **Set Up the Backend:**
+   - The application includes a one-click setup guide for both Windows and Mac/Linux
+   - Access this guide in the app when running in demo mode
+   - Follow the provided terminal commands to clone, set up, and start the Riffusion server
 
-## What technologies are used for this project?
+## Configuration
 
-This project is built with:
+The app connects to the Riffusion API at `http://localhost:8000` by default. You can modify this in `src/config/api.ts` if your backend is running elsewhere.
 
-- Vite
-- TypeScript
+## Technologies Used
+
 - React
-- shadcn-ui
+- TypeScript
+- Vite
 - Tailwind CSS
+- shadcn-ui components
 
-## How can I deploy this project?
+## Deployment
 
-Simply open [Lovable](https://lovable.dev/projects/a98f5a9c-96d0-4630-bb13-370dc0277b80) and click on Share -> Publish.
+You can deploy this project using:
 
-## Can I connect a custom domain to my Lovable project?
+1. **Lovable**: Click on Share -> Publish from the Lovable interface.
+2. **Manual Deployment**: Build the app (`npm run build`) and deploy the `dist` folder to any static hosting service.
 
-Yes it is!
+## Connecting a Custom Domain
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+To connect a custom domain to your Lovable project, navigate to Project > Settings > Domains and click Connect Domain.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+For more details, see: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Backend Troubleshooting
+
+If you encounter issues with the Riffusion backend:
+- For CUDA errors, try running with CPU: `export CUDA_VISIBLE_DEVICES=-1`
+- For memory issues, reduce batch size in the Riffusion configuration
+- Verify the API is running by checking `http://localhost:8000/api/health`
+
+## Additional Resources
+
+- [Riffusion GitHub Repository](https://github.com/riffusion/riffusion)
+- [Riffusion Paper](https://arxiv.org/abs/2212.09292)

@@ -2,6 +2,7 @@
 // API configuration for Riffusion
 export const API_CONFIG = {
   // Enable demo mode to use mock data instead of trying to connect to a local server
+  // Auto-switches to demo mode if API is unavailable
   DEMO_MODE: false,
   
   // Base URL for the Riffusion API - change this if your API is running on a different host/port
@@ -42,6 +43,26 @@ export const API_CONFIG = {
       "pip install transformers==4.23.1"
     ],
     START_SERVER: "python -m riffusion.server",
-    GITHUB_REPO: "https://github.com/riffusion/riffusion"
+    GITHUB_REPO: "https://github.com/riffusion/riffusion",
+    ONE_CLICK_SETUP: {
+      WINDOWS: [
+        "git clone https://github.com/riffusion/riffusion",
+        "cd riffusion",
+        "python -m venv venv",
+        "venv\\Scripts\\activate",
+        "pip install -e .",
+        "pip install huggingface_hub==0.11.1 diffusers==0.9.0 accelerate==0.12.0 transformers==4.23.1",
+        "python -m riffusion.server"
+      ],
+      MAC_LINUX: [
+        "git clone https://github.com/riffusion/riffusion",
+        "cd riffusion",
+        "python -m venv venv",
+        "source venv/bin/activate",
+        "pip install -e .",
+        "pip install huggingface_hub==0.11.1 diffusers==0.9.0 accelerate==0.12.0 transformers==4.23.1",
+        "python -m riffusion.server"
+      ]
+    }
   }
 };

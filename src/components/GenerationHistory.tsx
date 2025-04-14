@@ -16,16 +16,20 @@ interface GenerationHistoryProps {
   history: Generation[];
   onPlay: (generation: Generation) => void;
   onDelete: (id: string) => void;
+  apiStatus?: 'online' | 'offline' | 'checking';
 }
 
 const GenerationHistory: React.FC<GenerationHistoryProps> = ({ 
   history, 
   onPlay, 
-  onDelete 
+  onDelete,
+  apiStatus = 'checking'
 }) => {
   if (history.length === 0) {
     return null;
   }
+
+  const isDemoMode = API_CONFIG.DEMO_MODE || apiStatus === 'offline';
 
   return (
     <div className="glass-panel rounded-lg p-4">
@@ -40,11 +44,11 @@ const GenerationHistory: React.FC<GenerationHistoryProps> = ({
             audioUrl={item.audioUrl}
             onPlay={() => onPlay(item)}
             onDelete={() => onDelete(item.id)}
-            isDemoMode={API_CONFIG.DEMO_MODE}
+            isDemoMode={isDemoMode}
           />
         ))}
       </div>
-      {API_CONFIG.DEMO_MODE && (
+      {isDemoMode && (
         <div className="mt-3 text-xs text-amber-600 italic">
           <p>Note: History items are using sample audio in demo mode</p>
         </div>
