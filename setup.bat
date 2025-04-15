@@ -22,8 +22,12 @@ cd ..
 REM Install frontend dependencies
 npm install
 
+REM Add PYTHONPATH environment variable to include the current directory
+set PYTHONPATH=%PYTHONPATH%;%CD%
+
 REM Start backend
 start /B python riffusion\riffusion\server.py
 
 REM Start frontend
 npm run dev
+
