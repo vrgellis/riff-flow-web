@@ -14,7 +14,7 @@ if not exist "riffusion" (
 REM Install Riffusion dependencies
 cd riffusion
 pip install -e .
-pip install huggingface_hub==0.11.1 diffusers==0.9.0 accelerate==0.12.0 transformers==4.23.1
+pip install huggingface_hub==0.11.1 diffusers==0.9.0 accelerate==0.12.0 transformers==4.23.1 diffusers[torch]==0.9.0 ftfy==6.1.1 pydub==0.25.1
 
 REM Return to project root
 cd ..
@@ -30,4 +30,3 @@ start /B python riffusion\riffusion\server.py
 
 REM Start frontend
 npm run dev
-

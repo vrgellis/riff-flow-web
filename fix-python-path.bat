@@ -5,6 +5,9 @@ setlocal
 REM Activate virtual environment
 call riffusion-env\Scripts\activate
 
+REM Install missing packages if needed
+pip install transformers==4.23.1 ftfy==6.1.1 pydub==0.25.1 ffmpeg-python
+
 REM Set PYTHONPATH to include the current directory
 set PYTHONPATH=%PYTHONPATH%;%CD%
 
