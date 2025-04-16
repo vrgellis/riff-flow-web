@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { API_CONFIG } from '../config/api';
 import { AlertCircle, CheckCircle, Copy, Terminal, AlertTriangle } from 'lucide-react';
@@ -30,12 +29,20 @@ const InstallationHelp = () => {
             <p className="font-medium text-amber-800">Common CLIPImageProcessor Error</p>
             <p className="text-amber-700 text-xs mt-1">
               If you're seeing <code className="bg-amber-200 px-1 rounded">AttributeError: module transformers has no attribute CLIPImageProcessor</code>, 
-              use the specific package versions in our fix script:
+              run our fix script:
+            </p>
+            <div className="bg-black/80 text-green-400 p-2 rounded font-mono text-xs mt-1 mb-2">
+              fix-riffusion-server.bat
+            </div>
+            <p className="text-amber-700 text-xs mt-1">
+              This will install the exact working versions:
             </p>
             <ul className="list-disc list-inside text-amber-700 text-xs mt-1 ml-2">
-              <li>transformers==4.19.2 (not newer versions)</li>
+              <li>transformers==4.19.2</li>
               <li>diffusers==0.9.0</li>
-              <li>Install CLIP directly from GitHub</li>
+              <li>huggingface_hub==0.11.1</li>
+              <li>accelerate==0.12.0</li>
+              <li>CLIP from GitHub</li>
             </ul>
           </div>
         </div>
@@ -113,11 +120,11 @@ const InstallationHelp = () => {
         <ul className="space-y-1.5">
           <li className="flex items-start">
             <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 mr-1.5 flex-shrink-0" />
-            <span>If you see CUDA errors, try <code className="bg-muted px-1 rounded">export CUDA_VISIBLE_DEVICES=-1</code> to use CPU</span>
+            <span>If you see ffmpeg errors, run <code className="bg-muted px-1 rounded">pip install imageio-ffmpeg</code></span>
           </li>
           <li className="flex items-start">
             <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 mr-1.5 flex-shrink-0" />
-            <span>For ffmpeg errors, install <code className="bg-muted px-1 rounded">pip install imageio-ffmpeg</code></span>
+            <span>For CUDA errors, try <code className="bg-muted px-1 rounded">export CUDA_VISIBLE_DEVICES=-1</code> to use CPU</span>
           </li>
           <li className="flex items-start">
             <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-1.5 flex-shrink-0" />

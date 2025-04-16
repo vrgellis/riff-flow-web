@@ -17,6 +17,11 @@ const DemoModeBanner = () => {
     window.location.reload();
   };
 
+  const handleRunFixScript = () => {
+    // This can only provide guidance as we can't actually run the script from the browser
+    alert("Please open a command prompt in your project directory and run 'fix-riffusion-server.bat', then restart your frontend with 'npm run dev'");
+  };
+
   return (
     <div className="w-full glass-panel rounded-lg p-4 mb-6 bg-amber-500/20 border border-amber-500/30">
       <div className="flex flex-col space-y-2">

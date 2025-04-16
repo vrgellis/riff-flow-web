@@ -41,3 +41,4 @@ python riffusion\riffusion\server.py
 
 echo.
 echo If the server started successfully, open another terminal and run 'npm run dev' to start the frontend.
+
