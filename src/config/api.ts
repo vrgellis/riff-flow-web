@@ -1,6 +1,6 @@
 
 export const API_CONFIG = {
-  DEMO_MODE: true, // Enable demo mode by default since we're starting fresh
+  DEMO_MODE: false, // Set to false to use the backend server
   BASE_URL: 'http://localhost:8000',
   ENDPOINTS: {
     GENERATE: '/api/generate',
