@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
-import { AlertTriangle, HelpCircle, RefreshCw } from "lucide-react";
+import { AlertTriangle, HelpCircle, RefreshCw, ExternalLink } from "lucide-react";
 import InstallationHelp from './InstallationHelp';
 import { API_CONFIG } from '../config/api';
 
@@ -24,7 +24,9 @@ const DemoModeBanner = () => {
           <div className="flex items-center">
             <AlertTriangle className="h-5 w-5 text-amber-600 mr-2" />
             <p className="font-medium text-amber-700">
-              Demo Mode Active — Using pre-recorded sample audio
+              {API_CONFIG.DEMO_MODE ? 
+                "Demo Mode Active — Using pre-recorded sample audio" : 
+                "API Connection Issue — Using pre-recorded sample audio"}
             </p>
           </div>
           <div className="flex space-x-2">
@@ -44,7 +46,16 @@ const DemoModeBanner = () => {
               className="text-amber-700 border-amber-500/50 hover:bg-amber-500/10"
             >
               <HelpCircle className="h-4 w-4 mr-1" />
-              {showInstallHelp ? "Hide Help" : "Setup Backend"}
+              {showInstallHelp ? "Hide Help" : "Setup Help"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-amber-700 border-amber-500/50 hover:bg-amber-500/10"
+              onClick={() => window.open('https://github.com/riffusion/riffusion/issues', '_blank')}
+            >
+              <ExternalLink className="h-4 w-4 mr-1" />
+              Issues
             </Button>
           </div>
         </div>

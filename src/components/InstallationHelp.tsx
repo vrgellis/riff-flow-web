@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { API_CONFIG } from '../config/api';
-import { AlertCircle, CheckCircle, Copy, Terminal } from 'lucide-react';
+import { AlertCircle, CheckCircle, Copy, Terminal, AlertTriangle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { toast } from 'sonner';
@@ -22,6 +22,24 @@ const InstallationHelp = () => {
   return (
     <div className="mt-2 p-3 bg-background/80 rounded-md text-sm">
       <h4 className="font-semibold mb-2">Backend Installation Guide</h4>
+      
+      <div className="mb-3 p-3 bg-amber-100 border border-amber-300 rounded-md">
+        <div className="flex items-start space-x-2">
+          <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium text-amber-800">Common CLIPImageProcessor Error</p>
+            <p className="text-amber-700 text-xs mt-1">
+              If you're seeing <code className="bg-amber-200 px-1 rounded">AttributeError: module transformers has no attribute CLIPImageProcessor</code>, 
+              use the specific package versions in our fix script:
+            </p>
+            <ul className="list-disc list-inside text-amber-700 text-xs mt-1 ml-2">
+              <li>transformers==4.19.2 (not newer versions)</li>
+              <li>diffusers==0.9.0</li>
+              <li>Install CLIP directly from GitHub</li>
+            </ul>
+          </div>
+        </div>
+      </div>
       
       <Tabs defaultValue="quick" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-2">
@@ -99,7 +117,7 @@ const InstallationHelp = () => {
           </li>
           <li className="flex items-start">
             <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 mr-1.5 flex-shrink-0" />
-            <span>For GPU memory errors, reduce batch size in the Riffusion config</span>
+            <span>For ffmpeg errors, install <code className="bg-muted px-1 rounded">pip install imageio-ffmpeg</code></span>
           </li>
           <li className="flex items-start">
             <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-1.5 flex-shrink-0" />

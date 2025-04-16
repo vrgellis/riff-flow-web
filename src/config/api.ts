@@ -28,10 +28,12 @@ export const API_CONFIG = {
     GITHUB_REPO: 'https://github.com/riffusion/riffusion.git',
     START_SERVER: 'python riffusion/riffusion/server.py',
     DEPENDENCY_FIXES: [
+      'pip install transformers==4.19.2',
       'pip install huggingface_hub==0.11.1',
       'pip install diffusers==0.9.0',
       'pip install accelerate==0.12.0',
-      'pip install transformers==4.23.1'
+      'pip install imageio-ffmpeg',
+      'pip install git+https://github.com/openai/CLIP.git'
     ],
     ONE_CLICK_SETUP: {
       WINDOWS: [
@@ -40,7 +42,9 @@ export const API_CONFIG = {
         'riffusion-env\\Scripts\\activate',
         'cd riffusion',
         'pip install -e .',
-        'pip install huggingface_hub==0.11.1 diffusers==0.9.0 accelerate==0.12.0 transformers==4.23.1',
+        'pip install transformers==4.19.2 huggingface_hub==0.11.1 diffusers==0.9.0 accelerate==0.12.0',
+        'pip install git+https://github.com/openai/CLIP.git',
+        'pip install imageio-ffmpeg',
         'cd ..',
         'python riffusion\\riffusion\\server.py'
       ],
@@ -50,7 +54,9 @@ export const API_CONFIG = {
         'source riffusion-env/bin/activate',
         'cd riffusion',
         'pip install -e .',
-        'pip install huggingface_hub==0.11.1 diffusers==0.9.0 accelerate==0.12.0 transformers==4.23.1',
+        'pip install transformers==4.19.2 huggingface_hub==0.11.1 diffusers==0.9.0 accelerate==0.12.0',
+        'pip install git+https://github.com/openai/CLIP.git',
+        'pip install imageio-ffmpeg',
         'cd ..',
         'python riffusion/riffusion/server.py'
       ]
