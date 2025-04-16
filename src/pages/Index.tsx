@@ -20,16 +20,17 @@ const Index = () => {
     setModel,
     generateMusic,
     handlePlay,
-    handleDelete
+    handleDelete,
+    checkApiStatus
   } = useAudioGeneration();
 
   return (
     <div className="min-h-screen app-gradient text-foreground">
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <Header apiStatus={apiStatus} />
+        <Header apiStatus={apiStatus} onReconnect={checkApiStatus} />
         
         <main className="mt-8">
-          {API_CONFIG.DEMO_MODE && <DemoModeBanner />}
+          {(API_CONFIG.DEMO_MODE || apiStatus === 'offline') && <DemoModeBanner />}
           
           <div className="w-full glass-panel rounded-lg p-6 mb-8">
             <PromptInput onGenerate={generateMusic} isGenerating={isGenerating} />

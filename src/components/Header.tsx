@@ -4,14 +4,21 @@ import { Music4, Radio, RefreshCw } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { toast } from 'sonner';
 
 interface HeaderProps {
   apiStatus?: 'online' | 'offline' | 'checking';
+  onReconnect?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ apiStatus = 'checking' }) => {
+const Header: React.FC<HeaderProps> = ({ apiStatus = 'checking', onReconnect }) => {
   const handleRefreshStatus = () => {
-    window.location.reload();
+    if (onReconnect) {
+      toast.info('Attempting to reconnect to API...');
+      onReconnect();
+    } else {
+      window.location.reload();
+    }
   };
 
   return (
@@ -48,14 +55,14 @@ const Header: React.FC<HeaderProps> = ({ apiStatus = 'checking' }) => {
                   className="h-8 w-8" 
                   onClick={handleRefreshStatus}
                 >
-                  <RefreshCw className="h-4 w-4" />
+                  <RefreshCw className={`h-4 w-4 ${apiStatus === 'checking' ? 'animate-spin' : ''}`} />
                 </Button>
               </div>
             </TooltipTrigger>
             <TooltipContent>
               <p>
                 {apiStatus === 'online' ? 'Riffusion API is connected and ready to generate music.' : 
-                 apiStatus === 'offline' ? 'Riffusion API is not reachable. Make sure your local server is running.' : 
+                 apiStatus === 'offline' ? 'Riffusion API is not reachable. Click to reconnect.' : 
                  'Checking connection to Riffusion API...'}
               </p>
             </TooltipContent>

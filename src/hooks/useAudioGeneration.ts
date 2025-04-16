@@ -29,8 +29,10 @@ export const useAudioGeneration = () => {
   const [seedValue, setSeedValue] = useState('');
   const [model, setModel] = useState('v1');
 
+  // Check API status on component mount
   useEffect(() => {
     if (API_CONFIG.DEMO_MODE) {
+      console.log('Running in demo mode - API checks disabled');
       setApiStatus('offline');
       toast.info('Running in demo mode. Using sample audio files only.');
       return;
@@ -46,21 +48,35 @@ export const useAudioGeneration = () => {
 
   const checkApiStatus = async () => {
     if (API_CONFIG.DEMO_MODE) {
+      console.log('Demo mode is active, setting API status to offline');
       setApiStatus('offline');
       return;
     }
     
     try {
+      console.log('Checking API status at:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.HEALTH}`);
       const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.HEALTH}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
       
-      setApiStatus(response.ok ? 'online' : 'offline');
+      const isOnline = response.ok;
+      console.log('API health check result:', isOnline ? 'online' : 'offline');
+      setApiStatus(isOnline ? 'online' : 'offline');
+      
+      if (isOnline && apiStatus === 'offline') {
+        toast.success('Connected to Riffusion API!');
+      }
     } catch (error) {
       console.error('API health check failed:', error);
       setApiStatus('offline');
+      
+      // Only show the toast if we're transitioning from online to offline
+      if (apiStatus === 'online') {
+        toast.error('Lost connection to Riffusion API. Running in offline mode.');
+      }
     }
   };
 
@@ -75,7 +91,8 @@ export const useAudioGeneration = () => {
       const seed = seedValue || Math.floor(Math.random() * 1000000).toString();
       
       // Demo mode implementation
-      if (API_CONFIG.DEMO_MODE) {
+      if (API_CONFIG.DEMO_MODE || apiStatus === 'offline') {
+        console.log('Generating in demo mode with prompt:', prompt);
         // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 1500));
         
@@ -90,12 +107,19 @@ export const useAudioGeneration = () => {
         
         setCurrentGeneration(newGeneration);
         setHistory(prev => [newGeneration, ...prev]);
-        toast.info('Generated in demo mode! (Using sample audio files)');
+        
+        if (API_CONFIG.DEMO_MODE) {
+          toast.info('Generated in demo mode! (Using sample audio files)');
+        } else {
+          toast.warning('Generated in offline mode! API server not detected.');
+        }
+        
         setIsGenerating(false);
         return;
       }
       
-      // Real API implementation (only used if demo mode is false)
+      // Real API implementation
+      console.log('Generating with real API, prompt:', prompt);
       const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GENERATE}`, {
         method: 'POST',
         headers: {
@@ -114,12 +138,13 @@ export const useAudioGeneration = () => {
       }
       
       const data = await response.json();
+      console.log('API response data:', data);
       
       const newGeneration: Generation = {
         id: `gen-${Date.now()}`,
         prompt,
-        imageUrl: data.image_url || `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SPECTROGRAM}/${data.id}.png`,
-        audioUrl: data.audio_url || `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUDIO}/${data.id}.wav`,
+        imageUrl: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SPECTROGRAM}/${data.id}.png`,
+        audioUrl: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUDIO}/${data.id}.wav`,
         seed,
         timestamp: new Date()
       };
@@ -179,6 +204,7 @@ export const useAudioGeneration = () => {
     setModel,
     generateMusic,
     handlePlay,
-    handleDelete
+    handleDelete,
+    checkApiStatus
   };
 };
