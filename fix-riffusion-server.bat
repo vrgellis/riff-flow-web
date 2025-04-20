@@ -11,12 +11,17 @@ call riffusion-env\Scripts\activate
 echo Step 1: Installing correct package versions...
 echo.
 
-REM Uninstall problematic packages first
+REM Completely uninstall problematic packages first
 pip uninstall -y transformers diffusers accelerate huggingface_hub
 
-REM Install specific package versions known to work with Riffusion
-pip install transformers==4.19.2 diffusers==0.9.0 accelerate==0.12.0 huggingface_hub==0.11.1 
-pip install ftfy==6.1.1 pydub==0.25.1 ffmpeg-python
+REM Use a specific order of installation that's known to work
+pip install transformers==4.19.2
+pip install diffusers==0.9.0
+pip install accelerate==0.12.0
+pip install huggingface_hub==0.11.1
+
+REM Install additional required packages
+pip install ftfy==6.1.1 pydub==0.25.1
 pip install git+https://github.com/openai/CLIP.git
 
 REM Install and configure ffmpeg properly
@@ -44,7 +49,31 @@ powershell -Command "(Get-Content src\config\api.ts) -replace 'DEMO_MODE: true',
 
 REM Configure the server to listen on all interfaces to ensure it's accessible
 echo.
-echo Step 4: Starting Riffusion server with proper network configuration...
+echo Step 4: Installing specific patch for CLIPImageProcessor issue...
+echo.
+
+REM Create a patch file that fixes the CLIPImageProcessor import
+echo Creating patch file for riffusion_pipeline.py...
+(
+echo from transformers.models.clip.image_processing_clip import CLIPImageProcessor
+echo import os
+echo import torch
+echo import numpy as np
+echo from PIL import Image
+echo from diffusers.pipeline_utils import DiffusionPipeline
+echo.
+echo # Rest of the file remains unchanged...
+) > riffusion_patch.py
+
+REM Patch the main file
+echo Applying patch to riffusion_pipeline.py...
+powershell -Command "Get-Content riffusion\riffusion\riffusion_pipeline.py | Select-Object -Skip 5 | Out-File -Encoding UTF8 riffusion_temp.py"
+powershell -Command "Get-Content riffusion_patch.py, riffusion_temp.py | Out-File -Encoding UTF8 riffusion\riffusion\riffusion_pipeline.py"
+del riffusion_patch.py
+del riffusion_temp.py
+
+echo.
+echo Step 5: Starting Riffusion server with proper network configuration...
 echo.
 echo Starting server with host 0.0.0.0 to make it accessible from all interfaces...
 python riffusion\riffusion\server.py --host 0.0.0.0 --port 8000
