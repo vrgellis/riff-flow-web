@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
-import { AlertTriangle, HelpCircle, RefreshCw, ExternalLink } from "lucide-react";
+import { AlertTriangle, HelpCircle, RefreshCw, ExternalLink, Terminal } from "lucide-react";
 import InstallationHelp from './InstallationHelp';
 import { API_CONFIG } from '../config/api';
 
@@ -35,6 +35,15 @@ const DemoModeBanner = () => {
             </p>
           </div>
           <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleRunFixScript}
+              className="text-amber-700 border-amber-500/50 hover:bg-amber-500/10"
+            >
+              <Terminal className="h-4 w-4 mr-1" />
+              Fix Server
+            </Button>
             <Button 
               variant="outline" 
               size="sm"

@@ -19,11 +19,19 @@ pip install transformers==4.19.2 diffusers==0.9.0 accelerate==0.12.0 huggingface
 pip install ftfy==6.1.1 pydub==0.25.1 ffmpeg-python
 pip install git+https://github.com/openai/CLIP.git
 
-REM Install ffmpeg if necessary
+REM Install ffmpeg binary package
 echo.
 echo Step 2: Configuring ffmpeg...
 echo.
 pip install imageio-ffmpeg
+
+REM Download ffmpeg binary for Windows
+echo Downloading ffmpeg binary...
+powershell -Command "Invoke-WebRequest -Uri 'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip' -OutFile 'ffmpeg.zip'"
+echo Extracting ffmpeg...
+powershell -Command "Expand-Archive -Force -Path 'ffmpeg.zip' -DestinationPath 'ffmpeg'"
+echo Adding ffmpeg to PATH...
+set PATH=%PATH%;%CD%\ffmpeg\ffmpeg-master-latest-win64-gpl\bin
 
 REM Set PYTHONPATH to include the current directory
 set PYTHONPATH=%PYTHONPATH%;%CD%
@@ -41,4 +49,3 @@ python riffusion\riffusion\server.py
 
 echo.
 echo If the server started successfully, open another terminal and run 'npm run dev' to start the frontend.
-
