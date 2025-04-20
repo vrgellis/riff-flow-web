@@ -55,15 +55,23 @@ export const useAudioGeneration = () => {
     
     try {
       console.log('Checking API status at:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.HEALTH}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
       const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.HEALTH}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
+        signal: controller.signal,
+        mode: 'cors', // Explicitly set CORS mode
       });
       
+      clearTimeout(timeoutId);
+      
       const isOnline = response.ok;
-      console.log('API health check result:', isOnline ? 'online' : 'offline');
+      console.log('API health check result:', isOnline ? 'online' : 'offline', 'Status:', response.status);
       setApiStatus(isOnline ? 'online' : 'offline');
       
       if (isOnline && apiStatus === 'offline') {
@@ -119,11 +127,15 @@ export const useAudioGeneration = () => {
       }
       
       // Real API implementation
-      console.log('Generating with real API, prompt:', prompt);
+      console.log('Generating with real API, prompt:', prompt, 'at URL:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GENERATE}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout for generation
+      
       const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GENERATE}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
           prompt,
@@ -131,9 +143,14 @@ export const useAudioGeneration = () => {
           denoising_strength: denoising,
           model_version: model,
         }),
+        signal: controller.signal,
+        mode: 'cors', // Explicitly set CORS mode
       });
       
+      clearTimeout(timeoutId);
+      
       if (!response.ok) {
+        console.error('API request failed with status:', response.status);
         throw new Error(`API request failed with status ${response.status}`);
       }
       
