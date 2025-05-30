@@ -1,0 +1,43 @@
+
+FROM python:3.9-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Clone Riffusion repository
+RUN git clone https://github.com/riffusion/riffusion.git
+
+# Install Python dependencies
+WORKDIR /app/riffusion
+RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir \
+    transformers==4.19.2 \
+    diffusers==0.9.0 \
+    accelerate==0.12.0 \
+    huggingface_hub==0.11.1 \
+    ftfy==6.1.1 \
+    pydub==0.25.1
+RUN pip install --no-cache-dir git+https://github.com/openai/CLIP.git
+
+# Create patch for CLIPImageProcessor issue
+RUN echo "from transformers.models.clip.image_processing_clip import CLIPImageProcessor" > /tmp/patch.py && \
+    echo "import os" >> /tmp/patch.py && \
+    echo "import torch" >> /tmp/patch.py && \
+    echo "import numpy as np" >> /tmp/patch.py && \
+    echo "from PIL import Image" >> /tmp/patch.py && \
+    echo "from diffusers.pipeline_utils import DiffusionPipeline" >> /tmp/patch.py && \
+    echo "" >> /tmp/patch.py && \
+    tail -n +6 riffusion/riffusion_pipeline.py >> /tmp/patch.py && \
+    mv /tmp/patch.py riffusion/riffusion_pipeline.py
+
+# Expose port
+EXPOSE 8000
+
+# Start the server
+CMD ["python", "riffusion/server.py", "--host", "0.0.0.0", "--port", "8000"]
