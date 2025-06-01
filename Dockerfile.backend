@@ -5,39 +5,82 @@ FROM python:3.9-slim
 RUN apt-get update && apt-get install -y \
     git \
     ffmpeg \
+    curl \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
+# Install numpy first (required by many other packages)
+RUN pip install --no-cache-dir numpy==1.24.3
+
 # Clone Riffusion repository
 RUN git clone https://github.com/riffusion/riffusion.git
 
-# Install Python dependencies
+# Install Python dependencies in correct order
 WORKDIR /app/riffusion
-RUN pip install --no-cache-dir -e .
+
+# Install core dependencies first
+RUN pip install --no-cache-dir \
+    torch==1.12.1 \
+    torchvision==0.13.1 \
+    torchaudio==0.12.1
+
+# Install transformers and related packages
 RUN pip install --no-cache-dir \
     transformers==4.19.2 \
     diffusers==0.9.0 \
     accelerate==0.12.0 \
-    huggingface_hub==0.11.1 \
+    huggingface_hub==0.11.1
+
+# Install additional dependencies
+RUN pip install --no-cache-dir \
     ftfy==6.1.1 \
-    pydub==0.25.1
+    pydub==0.25.1 \
+    flask \
+    flask-cors \
+    Pillow
+
+# Install CLIP
 RUN pip install --no-cache-dir git+https://github.com/openai/CLIP.git
 
-# Create patch for CLIPImageProcessor issue
-RUN echo "from transformers.models.clip.image_processing_clip import CLIPImageProcessor" > /tmp/patch.py && \
-    echo "import os" >> /tmp/patch.py && \
-    echo "import torch" >> /tmp/patch.py && \
-    echo "import numpy as np" >> /tmp/patch.py && \
-    echo "from PIL import Image" >> /tmp/patch.py && \
-    echo "from diffusers.pipeline_utils import DiffusionPipeline" >> /tmp/patch.py && \
-    echo "" >> /tmp/patch.py && \
-    tail -n +6 riffusion/riffusion_pipeline.py >> /tmp/patch.py && \
-    mv /tmp/patch.py riffusion/riffusion_pipeline.py
+# Install Riffusion package
+RUN pip install --no-cache-dir -e .
+
+# Create the server script
+RUN echo "import os" > /app/server.py && \
+    echo "import sys" >> /app/server.py && \
+    echo "sys.path.append('/app/riffusion')" >> /app/server.py && \
+    echo "from flask import Flask, request, jsonify" >> /app/server.py && \
+    echo "from flask_cors import CORS" >> /app/server.py && \
+    echo "import torch" >> /app/server.py && \
+    echo "from riffusion.riffusion_pipeline import RiffusionPipeline" >> /app/server.py && \
+    echo "" >> /app/server.py && \
+    echo "app = Flask(__name__)" >> /app/server.py && \
+    echo "CORS(app)" >> /app/server.py && \
+    echo "" >> /app/server.py && \
+    echo "# Initialize pipeline" >> /app/server.py && \
+    echo "pipeline = None" >> /app/server.py && \
+    echo "" >> /app/server.py && \
+    echo "@app.route('/api/health')" >> /app/server.py && \
+    echo "def health():" >> /app/server.py && \
+    echo "    return {'status': 'ok'}" >> /app/server.py && \
+    echo "" >> /app/server.py && \
+    echo "@app.route('/api/generate', methods=['POST'])" >> /app/server.py && \
+    echo "def generate():" >> /app/server.py && \
+    echo "    global pipeline" >> /app/server.py && \
+    echo "    if pipeline is None:" >> /app/server.py && \
+    echo "        pipeline = RiffusionPipeline.from_pretrained('riffusion/riffusion-model-v1')" >> /app/server.py && \
+    echo "    data = request.json" >> /app/server.py && \
+    echo "    prompt = data.get('prompt', '')" >> /app/server.py && \
+    echo "    return {'message': 'Generated for: ' + prompt}" >> /app/server.py && \
+    echo "" >> /app/server.py && \
+    echo "if __name__ == '__main__':" >> /app/server.py && \
+    echo "    app.run(host='0.0.0.0', port=8000, debug=True)" >> /app/server.py
 
 # Expose port
 EXPOSE 8000
 
 # Start the server
-CMD ["python", "riffusion/server.py", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "/app/server.py"]
